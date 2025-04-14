@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
+  const [lastPrompt, setLastPrompt] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,7 @@ export default function Home() {
       setError(null);
       setSelectedImage(null);
       setImages([]);
+      setLastPrompt(prompt); 
 
       const generatedImages = await generateImages(prompt);
       setImages(generatedImages);
@@ -38,15 +40,14 @@ export default function Home() {
   };
 
   const handleRegenerateWithStyle = async () => {
-    if (!selectedImage) return;
+    if (!selectedImage || !lastPrompt) return;
 
     try {
       setLoading(true);
       setError(null);
       setImages([]);
 
-      // Generate new images with similar style to the selected one
-      const newPrompt = `${prompt}, in the style of the selected image`;
+      const newPrompt = `${lastPrompt}, in the style of the selected image`;
       const generatedImages = await generateImages(newPrompt);
       setImages(generatedImages);
       setSelectedImage(null);
